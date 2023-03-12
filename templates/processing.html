@@ -1,0 +1,30 @@
+{% extends "bootstrap/base.html" %}
+
+
+{% block title %}
+NEWS CATEGORY
+{% endblock %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('.static', filename='signin.css')}}">
+{% endblock %}
+
+{% block content %}
+
+<div class ='container'>
+    <h3><b> The Uploaded News: </b></h3> <h4>{{d}}</h4>
+
+    <center><h3><b>
+        Predicted Category:
+    </h3></b>
+    <h2>
+        {{context}}
+    </h2>
+        <a href ="/dashboard">
+        <button class="btn btn-lg btn-primary" type="submit" value="Yes" name ="button">Dashboard</button>
+    </a>
+    </center>
+</div>
+
+{% endblock %}

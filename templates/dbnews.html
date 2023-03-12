@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+    <body>
+
+        {% for ctr in context %}
+            {% for n in ctr %}
+                {% for news in n %}
+                    {{news}}
+                {% endfor %}
+            {% endfor %}
+        {% endfor %}
+    </body>
+</html>

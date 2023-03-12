@@ -1,0 +1,28 @@
+{% extends "bootstrap/base.html" %}
+
+{% block title %}
+Upload News
+{% endblock %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('.static', filename='signin.css')}}">
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <h2>
+        Upload the News Here
+    </h2>
+  <form method="POST", action="/upload">
+    <div class="form-group">
+        {{ form.hidden_tag() }}
+        {{ form.title.label}}{{ form.title}}
+        {{ form.desc.label}} {{ form.desc}}
+      </div>
+      <button class="btn btn-lg btn-primary btn-block" type="submit">Upload News</button>
+  </form>
+
+</div> <!-- /container -->
+{% endblock %}

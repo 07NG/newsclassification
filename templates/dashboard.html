@@ -1,0 +1,86 @@
+{% extends "bootstrap/base.html" %}
+
+{% block title %}
+Dashboard
+{% endblock %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('static', filename='dashboard.css')}}">
+{% endblock %}
+
+{% block content %}
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Hello, {{username}}</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="{{ url_for('logout')}}">Log Out</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+          <ul class="nav nav-sidebar">
+            <li class="active"><a href="#">Dashboard <span class="sr-only">(current)</span></a></li>
+            <li><a href="{{ url_for('health')}}">Health</a></li>
+            <li><a href="{{ url_for('business')}}">Business</a></li>
+            <li><a href="{{ url_for('sports')}}">Sports</a></li>
+            <li><a href="{{ url_for('entertainment')}}">Entertainment</a></li>
+            <li><a href="{{ url_for('technology')}}">Technology</a></li>
+          </ul> <br> 
+          <ul class="nav nav-sidebar news-button">
+            <li><a href="{{ url_for('upload')}}">Upload News</a></li>
+          </ul>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+          <h1 class="page-header">News Category</h1>
+
+          <div class="row placeholders">
+            <div class="col-xs-6 col-sm-3 placeholder">
+              <img src="{{url_for('static',filename = 'health.jpg')}}" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
+              <h4><a href="{{ url_for('health')}}">Health</a></h4>
+            </div>
+            <div class="col-xs-6 col-sm-3 placeholder">
+              <img src="{{url_for('static',filename = 'business.jpg')}}" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
+              <h4><a href="{{ url_for('business')}}">Business</a></h4>
+            </div>
+            <div class="col-xs-6 col-sm-3 placeholder">
+              <img src="{{url_for('static',filename = 'sports.jpg')}}" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
+              <h4><a href="{{ url_for('sports')}}">Sports</a></h4>
+            </div>
+            <div class="col-xs-6 col-sm-3 placeholder">
+              <img src="{{url_for('static',filename = 'entertainment.jpg')}}" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
+              <h4><a href="{{ url_for('entertainment')}}">Entertainment</a></h4>
+            </div>
+            <div class="col-xs-6 col-sm-3 placeholder">
+              <img src="{{url_for('static',filename = 'tech.jpg')}}" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
+              <h4><a href="{{ url_for('technology')}}">Technology</a></h4>
+            </div>
+          </div>
+          <div class = "all-news">
+            <h2 class="sub-header">ALL NEWS</h2>
+              {% for news,desc,i,url in context %}
+              <img src="{{i}}" width="500" height="200" alt ="">
+              <h3>News: </h3> {{news}}
+              <h4>Description: </h4> {{desc}} <br>
+              <a href ="{{url}}">LINK</a>
+              <hr>
+              {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+{% endblock %}
