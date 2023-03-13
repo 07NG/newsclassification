@@ -1,3 +1,16 @@
+label {
+  font-size: 16px; /* default font size */
+  transition: font-size 0.2s ease-in-out; /* add smooth transition effect */
+}
+
+input[type="password"] {
+  width: 100%; /* make input field 100% width of its container */
+}
+
+input[type="text"] {
+  width: 100%; /* make input field 100% width of its container */
+}
+
 body {
     padding-top: 40px;
     padding-bottom: 40px;
