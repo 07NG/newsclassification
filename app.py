@@ -224,24 +224,24 @@ def upload(): #defining view function
 
     if form.validate_on_submit(): #Checking for form validation on submit
 
-    #   input = form.desc.data
-    #   input = [input]
+      input = form.desc.data
+      input = [input]
         
-    #   newnews = tfid.transform(input).toarray()
-    #   prediction = model.predict(newnews)
-    #   if prediction == 0 : #Label enoding used from model.py 0->Business, 1->Entertainment 2->Politics 3->Sports 4->Technology
-    #     context = 'business'
-    #   elif prediction == 1 :
-    #     context = 'entertainment'
-    #   elif prediction == 2 :
-    #     context = 'politics'
-    #   elif prediction == 3 :
-    #     context = 'sports '
-    #   else :
-    #     context = 'technology'
+      newnews = tfid.transform(input).toarray()
+      prediction = model.predict(newnews)
+      if prediction == 0 : 
+        context = 'business'
+      elif prediction == 1 :
+        context = 'entertainment'
+      elif prediction == 2 :
+        context = 'politics'
+      elif prediction == 3 :
+        context = 'sports'
+      else :
+        context = 'technology'
       
 
-        # print("here")
+        print(context)
       news_title = News.query.filter_by(title=form.title.data).first() # Quering the 'News' table in database and retrieving title whose matches
          #form title and first() retrieve first row that matches filter if none the 'None' is returened 
       if news_title:
