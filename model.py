@@ -23,46 +23,47 @@ import warnings
 warnings.filterwarnings("ignore")
 
 import nltk
-nltk.download('stopwords')
-nltk.download('punkt')
+nltk.download('stopwords') #download stopwords from nltk corpus
+nltk.download('punkt') #download punkt from nltk corpus
 
-data = pd.read_csv("data.csv")
+data = pd.read_csv("data.csv" ) #read data.csv file into Pandas dataframe 'data'
 
-
+#data cleaning 
 def process_text(text):
-    text = text.lower().replace('\n',' ').replace('\r','').strip()
-    text = re.sub(' +', ' ', text)
-    text = re.sub(r'[^\w\s]','',text)
+    text = text.lower().replace('\n',' ').replace('\r','').strip() #Convert the input text to lowercase, remove newlines, carriage returns 
+    text = re.sub(' +', ' ', text)# remove extra white spaces
+    text = re.sub(r'[^\w\s]','',text)# remove all non-word characters #\w->special char #\s->spcae or tab
     
     
-    stop_words = set(stopwords.words('english')) 
-    word_tokens = word_tokenize(text) 
-    filtered_sentence = [w for w in word_tokens if not w in stop_words] 
-    filtered_sentence = [] 
-    for w in word_tokens: 
-        if w not in stop_words: 
-            filtered_sentence.append(w) 
+    stop_words = set(stopwords.words('english')) #create sets of stopwords from nltk corpus into 'stop_words'
+    word_tokens = word_tokenize(text) #Tokenize the cleaned text into individual words
+    filtered_sentence = [w for w in word_tokens if not w in stop_words] #Remove all stop words from the tokenized text
+    # filtered_sentence = [] 
+    # for w in word_tokens: 
+    #     if w not in stop_words: 
+    #         filtered_sentence.append(w) 
     
-    text = " ".join(filtered_sentence)
-    return text
+    text = " ".join(filtered_sentence) #Join the remaining words back into a single string
+    return text #Return the processed text
 
-data['Text_parsed'] = data['Text'].apply(process_text)
-
-
-
-label_encoder = preprocessing.LabelEncoder() 
-data['Category_target']= label_encoder.fit_transform(data['Category'])
+#assining cleaned data[text] into data[textparsed]
+data['Text_parsed'] = data['Text'].apply(process_text) #cleaned data[text] into data[textparsed]
 
 
-X_train, X_test, y_train, y_test = train_test_split(data['Text_parsed'], 
+
+label_encoder = preprocessing.LabelEncoder() #create instance of labelencoder
+data['Category_target']= label_encoder.fit_transform(data['Category']) #transforms category column into unique numeric values
+
+
+X_train, X_test, y_train, y_test = train_test_split(data['Text_parsed'], # split testing set to be 20% for category and parsed data
                                                     data['Category_target'], 
                                                     test_size=0.2, 
                                                     random_state=8)
 
-ngram_range = (1,2)
-min_df = 10
-max_df = 1.
-max_features = 300
+ngram_range = (1,2) #sets ranger of ngram[sequence of words] to unigram-"i" and bigram-"i have" 
+min_df = 10 #sets min document frequency to 10
+max_df = 1. #sets max document frequency to 1
+max_features = 300 #top 300 features with highest idf[rare or unique] scores will be included
 
 tfidf = TfidfVectorizer(encoding='utf-8',
                         decode_error='ignore',
@@ -73,24 +74,24 @@ tfidf = TfidfVectorizer(encoding='utf-8',
                         min_df=min_df,
                         max_features=max_features,
                         norm='l2',
-                        sublinear_tf=True)
+                        sublinear_tf=True) #create instace of tdifevectorizer for feature selection
                         
-features_train = tfidf.fit_transform(X_train).toarray()
+features_train = tfidf.fit_transform(X_train).toarray() #transform x-train to feature matrix
 
 #FEATURE EXTRACTOR DUMPED
-pickle.dump(tfidf,open('feature.pkl','wb'))
+pickle.dump(tfidf,open('feature.pkl','wb')) #saves trained tdif into binary file i.e,feature.pkl
 
-labels_train = y_train
+labels_train = y_train #assigns labels-train with y-train containing target variables i.e,category for training data
 
-features_test = tfidf.transform(X_test).toarray()
-labels_test = y_test
+features_test = tfidf.transform(X_test).toarray() #feature matrix into numpy array
+labels_test = y_test #assigns lables-test with y-test containing target variable i.e,category  for testing data
 
 
-LR = LogisticRegression(C=1)
-LR.fit(features_train, labels_train)
+LR = LogisticRegression(C=1) #intialize LRC with regularization strength of c=1
+LR.fit(features_train, labels_train) #trains LRC by fitting target variables and feature matrix
 
-LR = DecisionTreeClassifier()
-LR.fit()
+LR = DecisionTreeClassifier() #initalizes decisiontreeclassifier
+LR.fit(features_train, labels_train) #trains dtc by fitting target variables and feature matrix
 
 #PREDICTIONS
 
@@ -105,13 +106,13 @@ LR.fit()
 #prediction = LR.predict(input_features)
 #print(prediction)
 
-pickle.dump(LR,open('model.pkl','wb'))
+pickle.dump(LR,open('model.pkl','wb')) #saves trained LRC in binary file:model.pkl
 
 # model = pickle.load(open('model.pkl','rb'))
 
-class TfidfVectorizerClass(CountVectorizer):
+class TfidfVectorizerClass(CountVectorizer): #tdifvectorizer class inheriting countvectorizer
 
-    def __init__(
+    def __init__( #initalize parameters into constructor
         self,
         *,
         input="content",
@@ -137,7 +138,7 @@ class TfidfVectorizerClass(CountVectorizer):
         sublinear_tf=False,
     ):
 
-        super().__init__(
+        super().__init__( # calls constructor of base class and initalize with parameters
             input=input,
             encoding=encoding,
             decode_error=decode_error,
@@ -157,19 +158,19 @@ class TfidfVectorizerClass(CountVectorizer):
             dtype=dtype,
         )
 
-        self._tfidf = TfidfTransformer(
+        self._tfidf = TfidfTransformer( #compute scores and all argument are property defined below and private instance variable self._tfidf
             norm=norm, use_idf=use_idf, smooth_idf=smooth_idf, sublinear_tf=sublinear_tf
         )
 
     # Broadcast the TF-IDF parameters to the underlying transformer instance
     # for easy grid search and repr
 
-    @property
-    def norm(self):
-        """Norm of each row output, can be either "l1" or "l2"."""
+    @property #property declaration
+    def norm(self): #creating norm property
+        """Norm of each row output, can be either "l1" or "l2"."None"""
         return self._tfidf.norm
 
-    @norm.setter
+    @norm.setter #setter method for norm
     def norm(self, value):
         self._tfidf.norm = value
 
