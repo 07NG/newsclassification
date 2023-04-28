@@ -4,18 +4,16 @@ import pickle
 import seaborn as sns
 import nltk
 from nltk.corpus import stopwords
-
+from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.linear_model import LogisticRegression
-from nltk.tokenize import word_tokenize
 from sklearn import preprocessing
 import re
 import warnings
-
-from wordcloud import WordCloud
+from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 
 warnings.filterwarnings("ignore")
 
@@ -23,39 +21,6 @@ nltk.download('stopwords')
 nltk.download('punkt')
 
 data = pd.read_csv("data.csv")
-
-
-def create_wordcloud(words):
-    wordcloud = WordCloud(width=800, height=500, random_state=21, max_font_size=110).generate(words)
-    plt.figure(figsize=(10, 7))
-    plt.imshow(wordcloud, interpolation="bilinear")
-    plt.axis('off')
-    plt.show()
-
-subset=data[data.Category=="business"]
-text=subset.Text.values
-words =" ".join(text)
-create_wordcloud(words)
-
-subset=data[data.Category=="entertainment"]
-text=subset.Text.values
-words =" ".join(text)
-create_wordcloud(words)
-
-subset=data[data.Category=="politics"]
-text=subset.Text.values
-words =" ".join(text)
-create_wordcloud(words)
-
-subset=data[data.Category=="sport"]
-text=subset.Text.values
-words =" ".join(text)
-create_wordcloud(words)
-
-subset=data[data.Category=="tech"]
-text=subset.Text.values
-words =" ".join(text)
-create_wordcloud(words)
 
 def process_text(text):
     if isinstance(text, list):
@@ -74,7 +39,6 @@ def process_text(text):
 
     text = " ".join(filtered_sentence)
     return text
-
 
 data['Text_parsed'] = data['Text'].apply(process_text)
 
@@ -101,12 +65,25 @@ tfidf = TfidfVectorizer(encoding='utf-8',
                         norm='l2',
                         sublinear_tf=True)
 
-pickle.dump(tfidf,open('feature.pkl','wb'))
+# Doc2Vec model
+documents = [TaggedDocument(doc, [i]) for i, doc in enumerate(X_train)]
+d2v_model = Doc2Vec(documents, vector_size=300, window=5, min_count=1, workers=4, epochs=10)
 
+# Transform text to vectors using the Doc2Vec model
+def get_vectors(model, corpus, size):
+    vectors = [model.infer_vector(doc.split()) for doc in corpus]
+    return vectors
+
+train_vectors = get_vectors(d2v_model, X_train, 300)
+test_vectors = get_vectors(d2v_model, X_test, 300)
+
+# Combine Tfidf vectors with Doc2Vec vectors
 features_train = tfidf.fit_transform(X_train).toarray()
+features_train = [features_train[i] + train_vectors[i] for i in range(len(train_vectors))]
 labels_train = y_train
 
 features_test = tfidf.transform(X_test).toarray()
+features_test = [features_test[i] + test_vectors[i] for i in range(len(test_vectors))]
 labels_test = y_test
 
 LR = LogisticRegression(C=1)
@@ -117,34 +94,3 @@ print(classification_report(labels_test, model_predictions))
 
 filename = 'news_classification_model.pkl'
 pickle.dump(LR, open(filename, 'wb'))
-
-
-# def classify_text(text1, true_label):
-#     # Preprocess the text
-#     processed_text = process_text(text1)
-#
-#     # Vectorize the text using the same TfidfVectorizer as in the training
-#     text_vector = tfidf.transform([processed_text]).toarray()
-#
-#     # Predict the category using the trained Logistic Regression model
-#     category_idx = LR.predict(text_vector)[0]
-#
-#     # Map the category index to its label using the LabelEncoder
-#     category_label = label_encoder.inverse_transform([category_idx])[0]
-#
-#     if category_label == true_label:
-#         print("The model predicts the correct label for the given text.")
-#     else:
-#         print("The model predicts a different label than the true label for the given text.")
-#
-#     return category_label
-#
-#
-# pred_text = ["Nepal Police Club defeated FC Khumaltar 3-1, while Friends Club salvaged a 1-1 draw with APF Football "
-#              "Club in the Martyrs Memorial A Division League here today. "]
-#
-#
-# print("prediction:", classify_text(pred_text,3))
-
-def Accuracy():
-    return round(accuracy_score(labels_test, model_predictions) * 100, 2)

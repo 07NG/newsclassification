@@ -36,7 +36,7 @@ Dashboard
         <div class="col-sm-3 col-md-2 sidebar">
           <ul class="nav nav-sidebar">
             <li class="active"><a href="#">Dashboard <span class="sr-only">(current)</span></a></li>
-            <li><a href="{{ url_for('health')}}">Health</a></li>
+            <li><a href="{{ url_for('politics')}}">Politics</a></li>
             <li><a href="{{ url_for('business')}}">Business</a></li>
             <li><a href="{{ url_for('sports')}}">Sports</a></li>
             <li><a href="{{ url_for('entertainment')}}">Entertainment</a></li>
@@ -51,8 +51,8 @@ Dashboard
 
           <div class="row placeholders">
             <div class="col-xs-6 col-sm-3 placeholder">
-              <img src="{{url_for('static',filename = 'health.jpg')}}" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
-              <h4><a href="{{ url_for('health')}}">Health</a></h4>
+              <img src="{{url_for('static',filename = 'politics.jpg')}}" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
+              <h4><a href="{{ url_for('politics')}}">Politics</a></h4>
             </div>
             <div class="col-xs-6 col-sm-3 placeholder">
               <img src="{{url_for('static',filename = 'business.jpg')}}" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
